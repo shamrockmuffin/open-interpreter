@@ -8,6 +8,7 @@ from PIL import Image
 
 from ...utils.lazy_import import lazy_import
 from ..utils.computer_vision import pytesseract_get_text
+from ..audio_analysis import analyze_audio
 
 # transformers = lazy_import("transformers") # Doesn't work for some reason! We import it later.
 
@@ -118,6 +119,12 @@ class Vision:
                 "\nTo use local vision, run `pip install 'open-interpreter[local]'`.\n"
             )
             return ""
+
+    def analyze_audio_file(self, audio_path):
+        """
+        Analyzes the given audio file using the analyze_audio function.
+        """
+        analyze_audio(audio_path)
 
     def query(
         self,
