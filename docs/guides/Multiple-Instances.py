@@ -1,11 +1,11 @@
+import os
 import whisper
 import soundfile as sf
 import re
 from nltk.sentiment import SentimentIntensityAnalyzer
-import os
+
 
 # List of keywords to detect (you can expand this list)
-moan_keywords = ['moan', 'ah', 'oh', 'uh', 'Carlos', 'Collin']
 profanity_keywords = ['fuck', 'shit', 'bitch', 'asshole', 'pussy']
 
 def remove_duplicate_phrases(text):
