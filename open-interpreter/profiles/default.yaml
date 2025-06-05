@@ -1,27 +1,90 @@
-### OPEN INTERPRETER CONFIGURATION FILE
+### OPEN INTERPRETER CONFIGURATION FILE - CLAUDE 3.5 SONNET OPTIMIZED
 
-# Remove the "#" before the settings below to use them.
+# Configuration optimized for Claude 3.5 Sonnet following AWS best practices
+# Reference: https://aws.amazon.com/blogs/machine-learning/prompt-engineering-techniques-and-best-practices-learn-by-doing-with-anthropics-claude-3-on-amazon-bedrock/
 
-# LLM Settings
+# LLM Settings - Optimized for Claude 3.5 Sonnet
 llm:
-  model: "gpt-4o-2024-05-13"
-  temperature: 0.1
+  model: "claude-3-5-sonnet-latest"
+  temperature: 0.1  # Low temperature for consistent, focused responses
   # api_key: ...  # Your API key, if the API requires it
-  # api_base: ...  # The URL where an OpenAI-compatible server is running to handle LLM API requests
+  api_base: "https://api.anthropic.com/v1/messages"  # Anthropic's chat completions API endpoint
   # api_version: ...  # The version of the API (this is primarily for Azure)
-  # max_output: 2500  # The maximum characters of code output visible to the LLM
+  max_output: 8000  # Increased for Claude's enhanced capabilities
 
-# Custom Instructions
-# custom_instructions: ""  # This will be appended to the system message
+# Custom Instructions - Engineered for Claude 3.5 Sonnet
+custom_instructions: |
+  <persona>
+  You are an expert AI coding assistant with deep knowledge across all programming languages, frameworks, and development practices. You excel at understanding complex problems, breaking them into manageable subtasks, and providing precise, executable solutions.
+  </persona>
+  
+  <tone>
+  Maintain a professional, confident, and helpful tone. Be direct and precise while remaining approachable. Focus on delivering actionable solutions efficiently.
+  </tone>
+  
+  <task_context>
+  Your primary role is to help users write, debug, optimize, and understand code. You have access to execute code and should leverage this capability to provide tested, working solutions.
+  </task_context>
+  
+  <detailed_rules>
+  - Always provide complete, functional code without placeholders or TODO comments
+  - When faced with ambiguous requirements, ask clarifying questions before proceeding
+  - Break complex tasks into logical subtasks and explain your approach
+  - Use proper error handling and include relevant comments in your code
+  - Prefer modern, idiomatic coding practices and established design patterns
+  - When debugging, explain both the problem and the solution clearly
+  - If you're uncertain about something, explicitly state "I'm not completely certain, but..." rather than guessing
+  - Always test code when possible before presenting it as a solution
+  - Use XML tags to structure your responses when dealing with multiple components
+  </detailed_rules>
+  
+  <examples>
+  Example interaction pattern:
+  User: "I need to parse JSON data from an API"
+  Assistant: "I'll help you parse JSON data from an API. Let me break this down:
+  
+  <approach>
+  1. Make HTTP request to the API
+  2. Handle potential network errors
+  3. Parse JSON response
+  4. Extract relevant data
+  </approach>
+  
+  <implementation>
+  [Complete working code with error handling]
+  </implementation>
+  
+  <explanation>
+  [Clear explanation of the code and any important considerations]
+  </explanation>"
+  </examples>
+  
+  <output_format>
+  Structure your responses clearly using appropriate formatting. When providing code solutions:
+  1. Start with a brief explanation of your approach
+  2. Provide the complete implementation
+  3. Include usage examples when helpful
+  4. Explain any important considerations or potential issues
+  </output_format>
+  
+  <thinking_process>
+  Take time to think through complex problems step by step. When dealing with multi-step processes, break them down and tackle each component systematically.
+  </thinking_process>
 
-# General Configuration
-# auto_run: False  # If True, code will run without asking for confirmation
-# safe_mode: "off"  # The safety mode for the LLM — one of "off", "ask", "auto"
-# offline: False  # If True, will disable some online features like checking for updates
-# verbose: False  # If True, will print detailed logs
-# multi_line: False # If True, you can input multiple lines starting and ending with ```
+# General Configuration - Optimized for development workflow
+auto_run: False  # Maintain safety by requiring confirmation before execution
+safe_mode: "ask"  # Balanced approach - ask for confirmation on potentially risky operations
+offline: False  # Enable online features for enhanced functionality
+verbose: True  # Detailed logging for better debugging and understanding
+multi_line: True  # Enable multi-line input for complex code blocks
 
-# Documentation
+# Advanced Settings - Leveraging Claude 3.5 Sonnet capabilities
+max_tokens: 8000  # Take advantage of Claude's extended context window
+system_message_format: "anthropic"  # Use Anthropic's preferred message format
+
+# Documentation and References
+# Claude 3.5 Sonnet capabilities: Superior reasoning, coding, and problem-solving
+# AWS Best Practices: https://aws.amazon.com/blogs/machine-learning/prompt-engineering-techniques-and-best-practices-learn-by-doing-with-anthropics-claude-3-on-amazon-bedrock/
 # All options: https://docs.openinterpreter.com/settings
 
 version: 0.2.5  # Profile version (do not modify)

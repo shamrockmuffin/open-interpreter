@@ -1,12 +1,30 @@
-import os
-import whisper
-import soundfile as sf
-import re
-from nltk.sentiment import SentimentIntensityAnalyzer
+# Requirements:
+# pip install groq soundfile nltk
+# For Windows users, set your API key in the terminal with:
+#   set GROQ_API_KEY=your-api-key-here
+# Or in PowerShell:
+#   $env:GROQ_API_KEY="your-api-key-here"
+# You can also set it below for testing only (not recommended for production).
 
+import os
+import re
+import soundfile as sf
+from pathlib import Path
+from nltk.sentiment import SentimentIntensityAnalyzer
+from groq import Groq
+# --- Optional: Set your API key here for testing only ---
+# Uncomment and set your key if you want to hardcode it (not recommended for production)
+os.environ["GROQ_API_KEY"] = "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"
+
+# --- Optional: Override Groq API endpoint (rarely needed) ---
+# client = Groq(base_url="https://api.groq.com/openai/v1")
+# Otherwise, just use:
+client = Groq()
 
 # List of keywords to detect (you can expand this list)
 profanity_keywords = ['fuck', 'shit', 'bitch', 'asshole', 'pussy']
+# You can add moan_keywords if needed, e.g. moan_keywords = ['moan', ...]
+moan_keywords = []
 
 def remove_duplicate_phrases(text):
     sentences = text.split('. ')
@@ -22,21 +40,21 @@ def highlight_keywords(text, keywords, highlight_color='red'):
         text = re.sub(f'\\b{keyword}\\b', f'\033[1;31m{keyword}\033[0m', text, flags=re.IGNORECASE)
     return text
 
-def transcribe_and_analyze(audio_path, model, sia):
+def transcribe_and_analyze(audio_path, groq_client, sia):
     try:
-        # Load the audio file
-        data, samplerate = sf.read(audio_path, dtype='float32')
+        # Check the file size (Groq limit is 25MB)
+        if os.path.getsize(audio_path) > 25 * 1024 * 1024:
+            raise ValueError("Audio file exceeds Groq's 25MB limit.")
 
-        # Check the duration of the audio file
-        duration = len(data) / samplerate
-        if duration > 3600:  # Limit to 1 hour for this example
-            raise ValueError("Audio file is too long to process")
-
-        print(f"Audio file loaded successfully. Duration: {duration:.2f} seconds")
-
-        # Transcribe the audio file
-        result = model.transcribe(audio_path)
-        text = result['text']
+        # Transcribe the audio file using Groq
+        with open(audio_path, "rb") as file:
+            transcription = groq_client.audio.transcriptions.create(
+                file=(str(audio_path), file.read()),
+                model="whisper-large-v3-turbo",  # Use the latest Groq Whisper model
+                response_format="json",
+                language="en"
+            )
+            text = transcription.text
 
         if not text.strip():
             raise ValueError("Transcription resulted in empty text")
@@ -51,29 +69,33 @@ def transcribe_and_analyze(audio_path, model, sia):
         sentiment = sia.polarity_scores(cleaned_text)
 
         return highlighted_text, sentiment
+    except FileNotFoundError:
+        print(f"Audio file does not exist: {audio_path}")
+        return None, None
+    except PermissionError:
+        print(f"Permission denied when accessing the audio file: {audio_path}")
+        return None, None
     except Exception as e:
         print(f"Error processing the audio file: {e}")
         return None, None
 
-# Load the larger Whisper model once
-model = whisper.load_model('large')
+# Ensure GROQ_API_KEY is set
+if not os.environ.get("GROQ_API_KEY"):
+    print("Please set your GROQ_API_KEY environment variable.")
+    exit(1)
 
 # Initialize VADER (Valence Aware Dictionary and sEntiment Reasoner)
 sia = SentimentIntensityAnalyzer()
 
-# Path to the audio file
-audio_file = r'D:\carlo\Edits\1_1463825_20240501-000937-remastered.wav'
+# Path to the audio file (use pathlib for cross-platform compatibility)
+audio_file = Path(r'D:/carlo/Edits/1_1463825_20240501-000937-remastered.wav')
 
-# Ensure the file exists
-if not os.path.isfile(audio_file):
-    print(f"Audio file does not exist: {audio_file}")
-else:
-    # Transcribe and analyze the audio file
-    transcribed_text, sentiment = transcribe_and_analyze(audio_file, model, sia)
+# Transcribe and analyze the audio file
+transcribed_text, sentiment = transcribe_and_analyze(audio_file, client, sia)
 
-    if transcribed_text and sentiment:
-        # Print the transcribed and highlighted text
-        print(f'Transcribed Text:\n{transcribed_text}')
+if transcribed_text and sentiment:
+    # Print the transcribed and highlighted text
+    print(f'Transcribed Text:\n{transcribed_text}')
 
-        # Print the sentiment analysis results
-        print(f'Sentiment Analysis:\n{sentiment}')
+    # Print the sentiment analysis results
+    print(f'Sentiment Analysis:\n{sentiment}')
