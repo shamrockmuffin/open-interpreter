@@ -1,21 +1,18 @@
-  {
-    "build": {
-      "dockerfile": "Dockerfile",
-      "context": "."
+{
+  "user": "root",
+  "install": "python3 -m venv .venv && .venv/bin/pip install --upgrade pip --break-system-packages && .venv/bin/pip install .[server] --break-system-packages && .venv/bin/pip install pytest --break-system-packages",
+  "start": "",
+  "terminals": [
+    {
+      "name": "interpreter-server",
+      "command": ".venv/bin/interpreter --server",
+      "description": "Runs the Open Interpreter LMC-compatible websocket server on port 8000"
     },
-    "user": "root",
-    "install": "python3 -m venv .venv && .venv/bin/pip install --upgrade pip && .venv/bin/pip install .[server] && .venv/bin/pip install pytest",
-    "start": "",
-    "terminals": [
-      {
-        "name": "interpreter-server",
-        "command": ".venv/bin/interpreter --server",
-        "description": "Runs the Open Interpreter LMC-compatible websocket server on port 8000"
-      },
-      {
-        "name": "test-runner",
-        "command": ".venv/bin/python -m pytest tests/ -v",
-        "description": "Runs the test suite for the Open Interpreter project"
-      }
-    ]
-  }
+    {
+      "name": "test-runner",
+      "command": ".venv/bin/python -m pytest tests/ -v",
+      "description": "Runs the test suite for the Open Interpreter project"
+    }
+  ],
+  "agentCanUpdateSnapshot": false
+}
