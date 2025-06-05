@@ -4,17 +4,17 @@
       "context": "."
     },
     "user": "root",
-    "install": "pip install \".[server]\" && pip install pytest",
+    "install": "python3 -m venv .venv && .venv/bin/pip install --upgrade pip && .venv/bin/pip install .[server] && .venv/bin/pip install pytest",
     "start": "",
     "terminals": [
       {
         "name": "interpreter-server",
-        "command": "interpreter --server",
+        "command": ".venv/bin/interpreter --server",
         "description": "Runs the Open Interpreter LMC-compatible websocket server on port 8000"
       },
       {
         "name": "test-runner",
-        "command": "cd /workspaces && python -m pytest tests/ -v",
+        "command": ".venv/bin/python -m pytest tests/ -v",
         "description": "Runs the test suite for the Open Interpreter project"
       }
     ]
